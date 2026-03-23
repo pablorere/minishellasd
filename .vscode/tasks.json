@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Norminette",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				"-m",
+				"norminette"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "test"
+		}
+	]
+}

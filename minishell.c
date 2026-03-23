@@ -139,6 +139,7 @@ static char	*read_line(const char *prompt)
 		{
 			char	*expanded;
 			size_t	new_capacity;
+			size_t	index;
 
 			new_capacity = capacity * 2;
 			expanded = malloc(new_capacity);
@@ -147,8 +148,6 @@ static char	*read_line(const char *prompt)
 				free(line);
 				return (NULL);
 			}
-			size_t	index;
-
 			index = 0;
 			while (index < length)
 			{

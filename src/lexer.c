@@ -1,37 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ppaula-s <ppaula-s@student.42urduliz.com   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/23 14:27:06 by ppaula-s          #+#    #+#             */
+/*   Updated: 2026/03/23 14:27:06 by ppaula-s         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-static t_token	*new_token(char *value, int type)
-{
-	t_token	*tok;
-
-	tok = malloc(sizeof(t_token));
-	if (!tok)
-		return (NULL);
-	tok->value = value;
-	tok->type = type;
-	tok->next = NULL;
-	return (tok);
-}
-
-static void	token_add_back(t_token **lst, t_token *new)
-{
-	t_token	*tmp;
-
-	if (!*lst)
-	{
-		*lst = new;
-		return ;
-	}
-	tmp = *lst;
-	while (tmp->next)
-		tmp = tmp->next;
-	tmp->next = new;
-}
-
-static int	is_special(char c)
-{
-	return (c == '|' || c == '<' || c == '>' || c == '\0');
-}
 
 static const char	*skip_quoted(const char *s)
 {
@@ -71,71 +50,48 @@ static char	*read_word(const char **s)
 	return (result);
 }
 
+static t_token	*get_ret(const char **s, char *v, int type, int adv)
+{
+	*s += adv;
+	return (new_token(ft_strdup(v), type));
+}
+
+static t_token	*get_op(const char **s)
+{
+	if (**s == '|')
+		return (get_ret(s, "|", TOKEN_PIPE, 1));
+	if (**s == '>' && *(*s + 1) == '>')
+		return (get_ret(s, ">>", TOKEN_REDIR_APPEND, 2));
+	if (**s == '<' && *(*s + 1) == '<')
+		return (get_ret(s, "<<", TOKEN_HEREDOC, 2));
+	if (**s == '>')
+		return (get_ret(s, ">", TOKEN_REDIR_OUT, 1));
+	if (**s == '<')
+		return (get_ret(s, "<", TOKEN_REDIR_IN, 1));
+	return (NULL);
+}
+
 t_token	*tokenize(const char *line)
 {
-	t_token	*tokens;
+	t_token	*h;
 	t_token	*tok;
-	char	*val;
 
-	tokens = NULL;
+	h = NULL;
 	while (*line)
 	{
 		while (ft_isspace(*line))
 			line++;
 		if (!*line)
 			break ;
-		if (*line == '|')
+		tok = get_op(&line);
+		if (!tok)
 		{
-			tok = new_token(ft_strdup("|"), TOKEN_PIPE);
-			token_add_back(&tokens, tok);
-			line++;
+			tok = new_token(read_word(&line), TOKEN_WORD);
+			if (!tok->value)
+				ft_putstr_fd("check_alloc\n", 2);
 		}
-		else if (*line == '>' && *(line + 1) == '>')
-		{
-			tok = new_token(ft_strdup(">>"), TOKEN_REDIR_APPEND);
-			token_add_back(&tokens, tok);
-			line += 2;
-		}
-		else if (*line == '<' && *(line + 1) == '<')
-		{
-			tok = new_token(ft_strdup("<<"), TOKEN_HEREDOC);
-			token_add_back(&tokens, tok);
-			line += 2;
-		}
-		else if (*line == '>')
-		{
-			tok = new_token(ft_strdup(">"), TOKEN_REDIR_OUT);
-			token_add_back(&tokens, tok);
-			line++;
-		}
-		else if (*line == '<')
-		{
-			tok = new_token(ft_strdup("<"), TOKEN_REDIR_IN);
-			token_add_back(&tokens, tok);
-			line++;
-		}
-		else
-		{
-			val = read_word(&line);
-			if (val)
-			{
-				tok = new_token(val, TOKEN_WORD);
-				token_add_back(&tokens, tok);
-			}
-		}
+		if (tok)
+			token_add_back(&h, tok);
 	}
-	return (tokens);
-}
-
-void	free_tokens(t_token *tokens)
-{
-	t_token	*tmp;
-
-	while (tokens)
-	{
-		tmp = tokens->next;
-		free(tokens->value);
-		free(tokens);
-		tokens = tmp;
-	}
+	return (h);
 }

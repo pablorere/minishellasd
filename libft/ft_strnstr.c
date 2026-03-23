@@ -1,18 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strnstr.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ppaula-s <ppaula-s@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/16 15:25:14 by ppaula-s          #+#    #+#             */
+/*   Updated: 2025/04/16 16:15:44 by ppaula-s         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
-char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
+char	*ft_strnstr(const char *hay, const char *needle, size_t len)
 {
-	size_t	nlen;
 	size_t	i;
+	size_t	j;
 
-	if (!*needle)
-		return ((char *)haystack);
-	nlen = ft_strlen(needle);
+	if (*needle == '\0' || needle == NULL)
+		return ((char *)hay);
 	i = 0;
-	while (i + nlen <= len && haystack[i])
+	while (hay[i] != '\0' && i < len)
 	{
-		if (ft_strncmp(haystack + i, needle, nlen) == 0)
-			return ((char *)(haystack + i));
+		j = 0;
+		while (needle[j] == hay[i + j] && i + j < len)
+		{
+			if (needle[j + 1] == '\0')
+				return ((char *)hay + i);
+			j++;
+		}
 		i++;
 	}
 	return (NULL);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ppaula-s <ppaula-s@student.42urduliz.com   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/23 14:12:31 by ppaula-s          #+#    #+#             */
+/*   Updated: 2026/03/23 14:12:31 by ppaula-s         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -62,16 +74,42 @@ void	setup_signals_child(void);
 t_token	*tokenize(const char *line);
 void	free_tokens(t_token *tokens);
 
+/* lexer_utils.c */
+t_token	*new_token(char *value, int type);
+void	token_add_back(t_token **lst, t_token *new);
+int		is_special(char c);
+
 /* parser.c */
 t_cmd	*parse_tokens(t_token *tokens);
 void	free_cmds(t_cmd *cmds);
+
+/* parser_utils.c */
+t_cmd	*new_cmd(void);
+void	add_arg(t_cmd *cmd, char *val);
+void	add_redir(t_cmd *cmd, char *file, int type);
+void	free_cmd_content(t_cmd *cmd);
 
 /* expander.c */
 void	expand_tokens(t_token *tokens, t_shell *shell);
 char	*expand_string(const char *str, t_shell *shell);
 
+/* expander_utils.c */
+int		is_valid_start(char c);
+char	*append_char(char *result, char c);
+char	*expand_dollar(const char **str, t_shell *shell, char *result);
+
+/* expander_quotes.c */
+char	*handle_single_quote(const char **str, char *result);
+char	*handle_double_quote(const char **str, t_shell *shell, char *result);
+
 /* executor.c */
 void	execute_cmds(t_shell *shell);
+
+/* executor_child.c */
+void	exec_child(t_cmd *cmd, t_shell *shell, int in_fd, int out_fd);
+
+/* executor_utils.c */
+void	wait_children(pid_t last_pid, t_shell *shell);
 
 /* builtins.c */
 int		is_builtin(const char *cmd);
@@ -83,6 +121,11 @@ int		builtin_export(t_cmd *cmd, t_shell *shell);
 int		builtin_unset(t_cmd *cmd, t_shell *shell);
 int		builtin_env(t_shell *shell);
 int		builtin_exit(t_cmd *cmd, t_shell *shell);
+
+/* builtins_utils.c */
+int		is_valid_env_name(const char *name);
+int		is_numeric_arg(const char *arg);
+int		process_export_arg(char *arg, t_shell *shell);
 
 /* redirections.c */
 int		apply_redirections(t_cmd *cmd);

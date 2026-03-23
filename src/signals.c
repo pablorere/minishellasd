@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ppaula-s <ppaula-s@student.42urduliz.com   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/23 14:26:21 by ppaula-s          #+#    #+#             */
+/*   Updated: 2026/03/23 14:26:21 by ppaula-s         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static void	sig_handler(int sig)
@@ -48,4 +60,5 @@ void	setup_signals_child(void)
 	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGQUIT, &sa, NULL);
+	signal(SIGPIPE, SIG_DFL);
 }

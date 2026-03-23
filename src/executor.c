@@ -127,6 +127,11 @@ void	execute_cmds(t_shell *shell)
 			}
 		}
 		pid = fork();
+		if (pid == -1)
+		{
+			perror("minishell: fork");
+			return ;
+		}
 		if (pid == 0)
 		{
 			if (cmd->next)

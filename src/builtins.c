@@ -193,7 +193,7 @@ int	builtin_exit(t_cmd *cmd, t_shell *shell)
 	ft_putstr_fd("exit\n", 1);
 	code = shell->exit_status;
 	if (cmd->args[1])
-		code = ft_atoi(cmd->args[1]) % 256;
+		code = ((ft_atoi(cmd->args[1]) % 256) + 256) % 256;
 	shell->exit_status = code;
 	cleanup_shell(shell);
 	exit(code);

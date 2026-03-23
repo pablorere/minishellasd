@@ -168,6 +168,16 @@ static int	is_executable(const char *path)
 	return (0);
 }
 
+static void	free_paths(char **paths)
+{
+	int	i;
+
+	i = 0;
+	while (paths[i])
+		free(paths[i++]);
+	free(paths);
+}
+
 char	*find_executable(const char *cmd, char **envp)
 {
 	char	*path_env;
@@ -198,19 +208,13 @@ char	*find_executable(const char *cmd, char **envp)
 		free(tmp);
 		if (is_executable(full_path))
 		{
-			i = 0;
-			while (paths[i])
-				free(paths[i++]);
-			free(paths);
+			free_paths(paths);
 			return (full_path);
 		}
 		free(full_path);
 		i++;
 	}
-	i = 0;
-	while (paths[i])
-		free(paths[i++]);
-	free(paths);
+	free_paths(paths);
 	return (NULL);
 }
 

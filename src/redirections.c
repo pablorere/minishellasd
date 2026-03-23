@@ -12,7 +12,7 @@ int	handle_heredoc(const char *delimiter)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strncmp(line, delimiter, dlen + 1) == 0)
+		if (!line || (ft_strncmp(line, delimiter, dlen) == 0 && line[dlen] == '\0'))
 		{
 			free(line);
 			break ;
